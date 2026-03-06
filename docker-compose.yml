@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  abc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: abc-calculator
+    ports:
+      - '3000:3000'
+    volumes:
+      - abc-data:/app/data
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - DATABASE_PATH=/app/data/abc.sqlite
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3000/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  abc-data:
+    driver: local
